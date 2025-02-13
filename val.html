@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Be My Valentine?</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+  background: url('val.png') no-repeat center center/cover;
+  background-size: cover;
+  transition: background 0.5s ease-in-out;
+}
+
+/* Hide elements */
+.hidden { display: none; }
+
+/* Floating Hearts Animation */
+.floating-heart {
+  position: absolute;
+  font-size: 24px;
+  animation: floatUp 3s linear infinite;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-100vh); opacity: 0; }
+}
+
+/* Teddy Bear Animation */
+.teddy-animation {
+  position: fixed;
+  bottom: -200px;
+  right: 20px;
+  transition: bottom 1s ease-out;
+}
+
+.teddy-animation.show {
+  bottom: 20px;
+}
+
+/* Love Meter styling */
+.love-meter {
+  width: 80%;
+  height: 20px;
+  background-color: rgba(80, 77, 78, 0.395);
+  border-radius: 10px;
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.love-meter-fill {
+  height: 100%;
+  background-color: #f87171;
+  width: 0%;
+  transition: width 0.5s ease-in-out;
+}
+
+/* Pop-up love note fade-in */
+.animate-fadeIn {
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* 🌍 MEDIA QUERIES FOR RESPONSIVENESS */
+
+/* Tablets (max-width: 768px) */
+@media screen and (max-width: 768px) {
+  body {
+    background: url('val.png') no-repeat center center/cover;
+    background-size: cover;
+  }
+  
+  .floating-heart {
+    font-size: 20px;
+  }
+
+  .teddy-animation {
+    right: 10px;
+  }
+
+  .love-meter {
+    width: 90%;
+  }
+}
+
+/* Mobile devices (max-width: 480px) */
+@media screen and (max-width: 480px) {
+  body {
+    background: url('val.png') no-repeat center center/cover;
+    background-size: cover;
+  }
+
+  .floating-heart {
+    font-size: 18px;
+  }
+
+  .teddy-animation {
+    right: 5px;
+  }
+
+  .love-meter {
+    width: 95%;
+  }
+}
+
+  </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen relative text-white p-4">
+  <!-- Background Music (Replace with your own file) -->
+  <audio id="bgMusic" loop>
+    <source src="val.mp3" type="audio/mp3" />
+  </audio>
+
+  <!-- Language Selection -->
+  <select id="languageSelect" class="mb-4 p-2 rounded text-black">
+    <option value="en">English</option>
+    <option value="ig">Igbo</option>
+    <option value="yo">Yoruba</option>
+    <option value="ha">Hausa</option>
+    <option value="pi">Pidgin</option>
+  </select>
+
+  <!-- Main Valentine Message -->
+  <h1 id="valMessage" class="text-4xl font-bold mb-6 drop-shadow-lg">
+    Will you be my Val? 😍
+  </h1>
+
+  <!-- Yes/No Buttons -->
+  <div class="flex space-x-6">
+    <button id="yesBtn" class="px-8 py-4 bg-green-600 rounded-full text-xl font-bold transform transition duration-300 hover:scale-110">
+      Yes! 💖
+    </button>
+    <button id="noBtn" class="px-8 py-4 bg-red-600 rounded-full text-xl font-bold transform transition duration-300 hover:scale-110">
+      No 😢
+    </button>
+  </div>
+
+  <!-- Love Meter -->
+  <div class="love-meter">
+    <div id="loveMeterFill" class="love-meter-fill"></div>
+  </div>
+
+  <!-- Pop-up Love Note Container -->
+  <div id="loveNoteContainer" class="fixed top-10 right-10"></div>
+
+  <!-- Teddy Bear Animation (Replace image URL if desired) -->
+  <div id="teddyContainer" class="teddy-animation hidden">
+    <img id="teddyImg" src="valen.png" alt="Teddy Bear" class="w-32 h-32" />
+  </div>
+
+  <!-- Surprise Video Modal (Replace VIDEO_ID with your video) -->
+  <div id="videoModal" class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center hidden">
+    <div class="bg-white rounded-lg overflow-hidden">
+      <iframe
+        id="surpriseVideo"
+        width="560"
+        height="315"
+        src="wh.mp4"
+        title="Surprise Video"
+        frameborder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowfullscreen
+      ></iframe>
+      <button id="closeVideo" class="w-full p-4 bg-red-600 text-white">Close</button>
+    </div>
+  </div>
+
+  <script>
+    // Translations for different languages
+    const translations = {
+      en: {
+        title: "Will you be my Val? 😍",
+        yes: "Yes! 💖",
+        no: "No 😢",
+        loveLetterTitle: "Your Personalized Love Letter ❤️",
+        loveLetterText: "Dear Love,\n\nYou are the sunshine in my day and the stars in my night. I am so lucky to have you in my life! 💖",
+        reverseText: "You know you want to say Yes 😏",
+        confirmation: "Yay! Happy Valentine's Day! 🎉💘",
+        loveNotes: ["You are amazing!", "I cherish every moment with you.", "My heart beats for you.", "You light up my life!"]
+      },
+      ig: {
+        title: "Ga-agbako m ka ibe m Valentine? 💕",
+        yes: "Ee! 💖",
+        no: "Mba 😢",
+        loveLetterTitle: "Akwụkwọ ịhụnanya gị nke ahaziri onwe ya ❤️",
+        loveLetterText: "Nwunye m,\n\nỊ bụ anyanwụ nke ụbọchị m na kpakpando nke abalị m. Ekele m maka ịbụ akụkụ ndụ m! 💖",
+        reverseText: "Ị maara na ị chọrọ ikwu Ee 😏",
+        confirmation: "Yay! Ezi Valentine! 🎉💘",
+        loveNotes: ["Ị bụ nke pụrụ iche!", "A na m ewere oge niile na-eche gị.", "Obi m na-agba maka gị.", "Ị na-eme ka ndụ m bụrụ ezigbo!"]
+      },
+      yo: {
+        title: "Se o maa je Valentine mi? ❤️",
+        yes: "Bẹẹni! 💖",
+        no: "Rara 😢",
+        loveLetterTitle: "Ifiranṣẹ Ifẹ Ti Ara Rẹ ❤️",
+        loveLetterText: "Ololufe mi,\n\nO jẹ oorun ọjọ mi ati irawọ alẹ mi. Inu mi dun lati ni ọ ninu aye mi! 💖",
+        reverseText: "O mọ pe o fẹ sọ Bẹẹni 😏",
+        confirmation: "Yay! Ẹ ku Ayẹyẹ Ọjọ Ifẹ! 🎉💘",
+        loveNotes: ["O wuyi gan-an!", "Mo nifẹ gbogbo akoko wa pọ.", "Ọkàn mi n lu fun ọ.", "Iwọ ni imọlẹ aye mi!"]
+      },
+      ha: {
+        title: "Za ku zama Valentine dina? 💖",
+        yes: "I, Na'am! 💖",
+        no: "A'a 😢",
+        loveLetterTitle: "Takardar Soyayya ta Musamman ❤️",
+        loveLetterText: "Masoyina,\n\nKai ne hasken rana na da taurarin dare na. Ina matukar sa’a da kasancewarka cikin rayuwata! 💖",
+        reverseText: "Ka san kana son cewa I, Na'am 😏",
+        confirmation: "Yay! Barka da ranar Valentine! 🎉💘",
+        loveNotes: ["Kai ne abin koyi!", "Ina son kasancewa tare da kai.", "Zuciyata na bugawa saboda kai.", "Kai ne hasken rayuwata!"]
+      },
+      pi: {
+        title: "You go be my Val? 🥰",
+        yes: "Yes o! 💖",
+        no: "No o 😢",
+        loveLetterTitle: "Your Personalized Love Letter ❤️",
+        loveLetterText: "My Love,\n\nYou be the sunshine for my day and the star for my night. I lucky to get you! 💖",
+        reverseText: "You sabi say you wan say Yes 😏",
+        confirmation: "Yay! Happy Valentine's Day! 🎉💘",
+        loveNotes: ["You dey shine!", "I dey feel you for my heart.", "My heart dey beat only for you.", "You na my sunshine!"]
+      }
+    };
+
+    let currentLang = "en";
+
+    // Elements
+    const languageSelect = document.getElementById("languageSelect");
+    const valMessage = document.getElementById("valMessage");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const loveMeterFill = document.getElementById("loveMeterFill");
+    const loveNoteContainer = document.getElementById("loveNoteContainer");
+    const teddyContainer = document.getElementById("teddyContainer");
+    const teddyImg = document.getElementById("teddyImg");
+    const videoModal = document.getElementById("videoModal");
+    const closeVideo = document.getElementById("closeVideo");
+    const bgMusic = document.getElementById("bgMusic");
+
+    // Initialize texts based on default language
+    function updateTexts() {
+      const t = translations[currentLang];
+      valMessage.innerText = t.title;
+      yesBtn.innerText = t.yes;
+      noBtn.innerText = t.no;
+    }
+    updateTexts();
+
+    // Change language event
+    languageSelect.addEventListener("change", (e) => {
+      currentLang = e.target.value;
+      updateTexts();
+    });
+
+    // Love Meter Logic
+    let loveMeter = 0;
+    function updateLoveMeter(value) {
+      loveMeter += value;
+      if (loveMeter > 100) loveMeter = 100;
+      loveMeterFill.style.width = loveMeter + "%";
+      if (loveMeter >= 100) {
+        // When full, show the teddy bear to "force" a Yes!
+        showTeddy();
+      }
+    }
+
+    // Button Events
+    noBtn.addEventListener("click", () => {
+  updateLoveMeter(20);
+
+  // Dynamically increase "Yes" button size
+  let scaleFactor = 1 + loveMeter / 50; // Adjust scaling factor
+  yesBtn.style.transform = `scale(${scaleFactor})`;
+
+  // Move "No" button to the side while "Yes" grows
+  if (loveMeter >= 50) {
+    noBtn.style.transform = `translateX(${loveMeter * 1.5}px)`; // Push "No" away
+  }
+
+  // When "Yes" is big enough, completely cover "No"
+  if (loveMeter >= 80) {
+    noBtn.style.position = "absolute";
+    noBtn.style.left = yesBtn.offsetLeft + "px"; // Move to overlap "Yes"
+    noBtn.style.opacity = "0"; // Fade out
+    noBtn.style.pointerEvents = "none"; // Disable clicking
+  }
+
+  valMessage.innerText = translations[currentLang].reverseText;
+  popUpLoveNote();
+});
+
+
+
+    yesBtn.addEventListener("click", () => {
+      valMessage.innerText = translations[currentLang].confirmation;
+      updateLoveMeter(100 - loveMeter); // Fill the love meter completely
+      playConfetti();
+      startHearts();
+      bgMusic.play();
+      // Show surprise video modal after a short delay
+      setTimeout(() => {
+        videoModal.classList.remove("hidden");
+      }, 2000);
+    });
+
+    // Play a sweet voice message on hovering over the Yes button (using the Web Speech API)
+    yesBtn.addEventListener("mouseenter", () => {
+      const msg = new SpeechSynthesisUtterance("I love you");
+      window.speechSynthesis.speak(msg);
+    });
+
+    // Function to display a pop-up love note
+    function popUpLoveNote() {
+      const note = document.createElement("div");
+      note.className = "bg-pink-500 p-2 m-2 rounded shadow animate-fadeIn";
+      const notesArray = translations[currentLang].loveNotes;
+      note.innerText = notesArray[Math.floor(Math.random() * notesArray.length)];
+      loveNoteContainer.appendChild(note);
+      setTimeout(() => note.remove(), 3000);
+    }
+
+    // Confetti Effect (simple simulation)
+    function playConfetti() {
+      const confettiCanvas = document.createElement("canvas");
+      confettiCanvas.style.position = "fixed";
+      confettiCanvas.style.top = "0";
+      confettiCanvas.style.left = "0";
+      confettiCanvas.width = window.innerWidth;
+      confettiCanvas.height = window.innerHeight;
+      confettiCanvas.style.pointerEvents = "none";
+      document.body.appendChild(confettiCanvas);
+      const ctx = confettiCanvas.getContext("2d");
+      let particles = [];
+      for (let i = 0; i < 150; i++) {
+        particles.push({
+          x: Math.random() * confettiCanvas.width,
+          y: Math.random() * confettiCanvas.height,
+          r: Math.random() * 6 + 4,
+          d: Math.random() * 150 + 50,
+          color: "hsl(" + Math.random() * 360 + ",100%,70%)",
+          tilt: Math.random() * 10 - 10
+        });
+      }
+      let angle = 0;
+      function drawConfetti() {
+        ctx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        angle += 0.01;
+        particles.forEach(p => {
+          p.y += Math.cos(angle + p.d) + 1 + p.r / 2;
+          p.x += Math.sin(angle);
+          ctx.beginPath();
+          ctx.lineWidth = p.r;
+          ctx.strokeStyle = p.color;
+          ctx.moveTo(p.x + p.tilt, p.y);
+          ctx.lineTo(p.x, p.y + p.tilt);
+          ctx.stroke();
+        });
+        requestAnimationFrame(drawConfetti);
+      }
+      drawConfetti();
+      // Remove confetti after 5 seconds
+      setTimeout(() => confettiCanvas.remove(), 5000);
+    }
+
+    // Floating Hearts Effect
+    function startHearts() {
+      for (let i = 0; i < 15; i++) {
+        let heart = document.createElement("div");
+        heart.className = "floating-heart";
+        heart.style.left = Math.random() * window.innerWidth + "px";
+        heart.innerText = "❤️";
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 3000);
+      }
+    }
+
+    // Teddy Bear Animation
+    function showTeddy() {
+      teddyContainer.classList.remove("hidden");
+      setTimeout(() => {
+        teddyContainer.classList.add("show");
+      }, 100);
+    }
+    // Clicking the teddy forces a Yes!
+    teddyImg.addEventListener("click", () => {
+      yesBtn.click();
+    });
+
+    // Video Modal Close
+    closeVideo.addEventListener("click", () => {
+      videoModal.classList.add("hidden");
+    });
+
+    // Random pop-up love notes every 10 seconds
+    setInterval(popUpLoveNote, 10000);
+  </script>
+</body>
+</html>
+
